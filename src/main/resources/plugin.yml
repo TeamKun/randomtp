@@ -1,0 +1,32 @@
+name: Randomtp
+version: ${project.version}
+main: sakastudio.randomtp.Randomtp
+api-version: 1.15
+commands:
+  exerandomTp:
+    description: /exerandomTp
+    usage: /exerandomTp
+    permission: Randomtp.operator
+    permission-message: You don't have <permission>
+  setRadius:
+    description: /setRadius <TPの半径>
+    usage: /setRadius
+    permission: Randomtp.operator
+    permission-message: You don't have <permission>
+  setMessage:
+    description: /setMessage <メッセージ>
+    usage: /setMessage
+    permission: Randomtp.all
+    permission-message: You don't have <permission>
+  getMessage:
+    description: /getMessage <プレイヤー名>
+    usage: /getMessage
+    permission: Randomtp.all
+    permission-message: You don't have <permission>
+permissions:
+  Randomtp.operator:
+    description: Randomtp operator
+    default: op
+  Randomtp.all:
+    description: all user
+    default: true
