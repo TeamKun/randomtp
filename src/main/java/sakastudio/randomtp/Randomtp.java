@@ -5,12 +5,15 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
 import java.util.*;
@@ -19,6 +22,7 @@ public final class Randomtp extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        randomtp = this;
         getServer().getPluginManager().registerEvents(this, this);
         radius = 500;
         // Plugin startup logic
@@ -31,8 +35,12 @@ public final class Randomtp extends JavaPlugin implements Listener {
     }
 
     int radius = 500;
+    //プレイヤーのメッセージを格納
     HashMap<String, String> PlayerMessage = new HashMap<String, String>();
-    ArrayList<Player> UndiscoveryPlayer = new ArrayList<Player>();
+    //未発見プレイヤーを格納
+    public HashMap<String, PlayerData> UndiscoveryPlayer = new HashMap<String, PlayerData>();
+    //各プレイヤーのスコアを格納
+    HashMap<String, Integer> PlayerScore = new HashMap<String, Integer>();
 
 
     @Override
@@ -51,7 +59,7 @@ public final class Randomtp extends JavaPlugin implements Listener {
 
                 Location location = new Location(p.getWorld(), x,255,z);
                 player.teleport(location);
-                UndiscoveryPlayer.add(player);
+                UndiscoveryPlayer.put(player.getName(),new PlayerData(player,x,z));
             }
             sender.sendMessage("ランダムTPを実行しました");
 
@@ -81,11 +89,41 @@ public final class Randomtp extends JavaPlugin implements Listener {
             }
             return true;
         }
+        if(cmd.getName().equalsIgnoreCase("showscore")){
+            sender.sendMessage("プレイヤースコア一覧");
+            for(Map.Entry<String, Integer> entry : PlayerScore.entrySet()){
+                sender.sendMessage(entry.getKey()+":"+entry.getValue());
+            }
+            return true;
+        }
+        if(cmd.getName().equalsIgnoreCase("showlist")){
+            sender.sendMessage("未発見プレイヤーリスト");
+            for(String val : UndiscoveryPlayer.keySet()){
+                sender.sendMessage(val);
+            }
+            return true;
+        }
         return false;
     }
 
     @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
+    public void onInteract(PlayerInteractEntityEvent event) {
+        //未発見リストからの削除とスコアの加算
+        Entity entity = event.getRightClicked();
+        if(entity instanceof Player){
+            Player target = (Player) entity;
+            UndiscoveryPlayer.remove(target.getName());
 
+            if (PlayerScore.get(event.getPlayer().getName()) == null){
+                PlayerScore.put(event.getPlayer().getName(),1);
+            }else {
+                PlayerScore.put(event.getPlayer().getName(),PlayerScore.get(event.getPlayer().getName())+1);
+            }
+        }
+    }
+
+    static Randomtp randomtp;
+    public static Randomtp Instanse(){
+        return  randomtp;
     }
 }

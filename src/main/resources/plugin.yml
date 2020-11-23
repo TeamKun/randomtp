@@ -23,6 +23,16 @@ commands:
     usage: /getMessage
     permission: Randomtp.all
     permission-message: You don't have <permission>
+  showlist:
+    description: /showlist
+    usage: /showlist
+    permission: Randomtp.all
+    permission-message: You don't have <permission>
+  showscore:
+    description: /showscore
+    usage: /showscore
+    permission: Randomtp.all
+    permission-message: You don't have <permission>
 permissions:
   Randomtp.operator:
     description: Randomtp operator
