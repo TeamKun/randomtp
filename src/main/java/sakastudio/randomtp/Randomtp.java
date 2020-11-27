@@ -41,8 +41,10 @@ public final class Randomtp extends JavaPlugin implements Listener {
     public HashMap<String, PlayerData> UndiscoveryPlayer = new HashMap<String, PlayerData>();
     //各プレイヤーのスコアを格納
     HashMap<String, Integer> PlayerScore = new HashMap<String, Integer>();
+    //初期探索者
+    List<String> InitSearcher = new ArrayList<String>();
 
-
+    //to-do　手動でプレイヤーを開放するコマンド
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
         if(cmd.getName().equalsIgnoreCase("exerandomTp")){
@@ -54,6 +56,15 @@ public final class Randomtp extends JavaPlugin implements Listener {
             Collection<? extends Player> players = Bukkit.getOnlinePlayers();
 
             for (Player player : players) {
+                boolean issercher = false;
+                for (String serchername: InitSearcher) {
+                    if(serchername == player.getName()){
+                        issercher = true;
+                        break;
+                    }
+                }
+                if(issercher){continue;}
+
                 double x = r.nextInt(radius * 2) - radius + playerX;
                 double z = r.nextInt(radius * 2) - radius + playerZ;
 
@@ -66,21 +77,38 @@ public final class Randomtp extends JavaPlugin implements Listener {
             return true;
         }
         if(cmd.getName().equalsIgnoreCase("setRadius")){
-            if (args.length != 1){sender.sendMessage("/setRadius <TPの半径>");}
+            if (args.length != 1){sender.sendMessage("/setRadius <TPの半径>");return false;}
 
             radius = Integer.parseInt(args[0]);
             sender.sendMessage("半径を" + args[0] + "に設定しました");
             return true;
         }
+        if(cmd.getName().equalsIgnoreCase("setsearcher")){
+            if (args.length != 1){sender.sendMessage("/setsearcher <プレイヤー名>");return false;}
+            InitSearcher.add(args[0]);
+            sender.sendMessage(args[0]+"を初期探索者として登録しました");
+            return true;
+        }
+        if(cmd.getName().equalsIgnoreCase("removesercher")){
+            if (args.length != 1){sender.sendMessage("/removesercher <プレイヤー名>");return false;}
+            int index = InitSearcher.indexOf(args[0]);
+            if(index == -1){
+                sender.sendMessage(args[0]+"は初期探索者に登録されてません");
+            }else{
+                InitSearcher.remove(index);
+                sender.sendMessage(args[0]+"を初期探索者から削除しました");
+            }
+            return true;
+        }
         if(cmd.getName().equalsIgnoreCase("setMessage")){
-            if (args.length != 1){sender.sendMessage("/setMessage <メッセージ>");}
+            if (args.length != 1){sender.sendMessage("/setMessage <メッセージ>");return false;}
 
             PlayerMessage.put(sender.getName(),args[0]);
             sender.sendMessage("メッセージを設定：" + args[0]);
             return true;
         }
         if(cmd.getName().equalsIgnoreCase("getMessage")){
-            if (args.length != 1){sender.sendMessage("/getMessage <プレイヤー名>");}
+            if (args.length != 1){sender.sendMessage("/getMessage <プレイヤー名>");return false;}
 
             if (PlayerMessage.containsKey(args[0])){
                 sender.sendMessage(args[0]+":" + PlayerMessage.get(args[0]));

@@ -13,6 +13,16 @@ commands:
     usage: /setRadius
     permission: Randomtp.operator
     permission-message: You don't have <permission>
+  setsearcher:
+    description: /setsearcher <プレイヤー名>
+    usage: /setsearcher
+    permission: Randomtp.operator
+    permission-message: You don't have <permission>
+  removesearcher:
+    description: /removesearcher <プレイヤー名>
+    usage: /removesearcher
+    permission: Randomtp.operator
+    permission-message: You don't have <permission>
   setMessage:
     description: /setMessage <メッセージ>
     usage: /setMessage
