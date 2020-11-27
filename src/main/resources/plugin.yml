@@ -23,6 +23,11 @@ commands:
     usage: /removesearcher
     permission: Randomtp.operator
     permission-message: You don't have <permission>
+  discovery:
+    description: /discovery <プレイヤー名>
+    usage: /discovery
+    permission: Randomtp.operator
+    permission-message: You don't have <permission>
   setMessage:
     description: /setMessage <メッセージ>
     usage: /setMessage

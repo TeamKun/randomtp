@@ -91,6 +91,16 @@ public final class Randomtp extends JavaPlugin implements Listener {
         }
         if(cmd.getName().equalsIgnoreCase("removesercher")){
             if (args.length != 1){sender.sendMessage("/removesercher <プレイヤー名>");return false;}
+            if(UndiscoveryPlayer.containsKey(args[0])){
+                sender.sendMessage(args[0]+"を未発見プレイヤーから削除しました");
+                UndiscoveryPlayer.remove(args[0]);
+            }else{
+                sender.sendMessage(args[0]+"は既に発見されたか、存在しません");
+            }
+            return true;
+        }
+        if(cmd.getName().equalsIgnoreCase("discovery")){
+            if (args.length != 1){sender.sendMessage("/discovery <プレイヤー名>");return false;}
             int index = InitSearcher.indexOf(args[0]);
             if(index == -1){
                 sender.sendMessage(args[0]+"は初期探索者に登録されてません");
