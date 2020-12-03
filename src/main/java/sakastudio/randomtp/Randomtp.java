@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
@@ -23,6 +24,7 @@ public final class Randomtp extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         randomtp = this;
+        getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(this, this);
         radius = 500;
         // Plugin startup logic
@@ -39,8 +41,6 @@ public final class Randomtp extends JavaPlugin implements Listener {
     HashMap<String, String> PlayerMessage = new HashMap<String, String>();
     //未発見プレイヤーを格納
     public HashMap<String, PlayerData> UndiscoveryPlayer = new HashMap<String, PlayerData>();
-    //各プレイヤーのスコアを格納
-    HashMap<String, Integer> PlayerScore = new HashMap<String, Integer>();
     //初期探索者
     List<String> InitSearcher = new ArrayList<String>();
 
@@ -58,7 +58,7 @@ public final class Randomtp extends JavaPlugin implements Listener {
             for (Player player : players) {
                 boolean issercher = false;
                 for (String serchername: InitSearcher) {
-                    if(serchername == player.getName()){
+                    if(serchername.equals(player.getName())){
                         issercher = true;
                         break;
                     }
@@ -89,18 +89,18 @@ public final class Randomtp extends JavaPlugin implements Listener {
             sender.sendMessage(args[0]+"を初期探索者として登録しました");
             return true;
         }
-        if(cmd.getName().equalsIgnoreCase("removesercher")){
-            if (args.length != 1){sender.sendMessage("/removesercher <プレイヤー名>");return false;}
+        if(cmd.getName().equalsIgnoreCase("discovery")){
+            if (args.length != 1){sender.sendMessage("/discovery <プレイヤー名>");return false;}
             if(UndiscoveryPlayer.containsKey(args[0])){
-                sender.sendMessage(args[0]+"を未発見プレイヤーから削除しました");
+                sender.sendMessage(args[0]+"を未発見リストから削除しました");
                 UndiscoveryPlayer.remove(args[0]);
             }else{
                 sender.sendMessage(args[0]+"は既に発見されたか、存在しません");
             }
             return true;
         }
-        if(cmd.getName().equalsIgnoreCase("discovery")){
-            if (args.length != 1){sender.sendMessage("/discovery <プレイヤー名>");return false;}
+        if(cmd.getName().equalsIgnoreCase("removesercher")){
+            if (args.length != 1){sender.sendMessage("/removesercher <プレイヤー名>");return false;}
             int index = InitSearcher.indexOf(args[0]);
             if(index == -1){
                 sender.sendMessage(args[0]+"は初期探索者に登録されてません");
@@ -127,13 +127,6 @@ public final class Randomtp extends JavaPlugin implements Listener {
             }
             return true;
         }
-        if(cmd.getName().equalsIgnoreCase("showscore")){
-            sender.sendMessage("プレイヤースコア一覧");
-            for(Map.Entry<String, Integer> entry : PlayerScore.entrySet()){
-                sender.sendMessage(entry.getKey()+":"+entry.getValue());
-            }
-            return true;
-        }
         if(cmd.getName().equalsIgnoreCase("showlist")){
             sender.sendMessage("未発見プレイヤーリスト");
             for(String val : UndiscoveryPlayer.keySet()){
@@ -146,18 +139,29 @@ public final class Randomtp extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEntityEvent event) {
-        //未発見リストからの削除とスコアの加算
         Entity entity = event.getRightClicked();
         if(entity instanceof Player){
             Player target = (Player) entity;
             UndiscoveryPlayer.remove(target.getName());
-
-            if (PlayerScore.get(event.getPlayer().getName()) == null){
-                PlayerScore.put(event.getPlayer().getName(),1);
-            }else {
-                PlayerScore.put(event.getPlayer().getName(),PlayerScore.get(event.getPlayer().getName())+1);
-            }
+            getServer().dispatchCommand(getServer().getConsoleSender(),"tellraw @a {\"text\":\""+target.getName()+"が発見されました！\",\"bold\":true}");
         }
+    }
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent e){
+        if(randomtp.UndiscoveryPlayer.containsKey(e.getPlayer().getName())){
+            if(isMoved(e)) e.setCancelled(true);
+        }
+    }
+
+    private boolean isMoved(PlayerMoveEvent e) {
+        Location from=e.getFrom();
+        Location to=e.getTo();
+        int fromXPos = from.getBlockX();
+        int fromZPos = from.getBlockZ();
+        int toXPos = to.getBlockX();
+        int toZPos = to.getBlockZ();
+        return !(fromXPos==toXPos && fromZPos==toZPos);
     }
 
     static Randomtp randomtp;

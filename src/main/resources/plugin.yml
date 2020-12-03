@@ -18,9 +18,9 @@ commands:
     usage: /setsearcher
     permission: Randomtp.operator
     permission-message: You don't have <permission>
-  removesearcher:
-    description: /removesearcher <プレイヤー名>
-    usage: /removesearcher
+  remove_Undiscovery_Player:
+    description: /remove_Undiscovery_Player <プレイヤー名>
+    usage: /remove_Undiscovery_Player
     permission: Randomtp.operator
     permission-message: You don't have <permission>
   discovery:
@@ -41,11 +41,6 @@ commands:
   showlist:
     description: /showlist
     usage: /showlist
-    permission: Randomtp.all
-    permission-message: You don't have <permission>
-  showscore:
-    description: /showscore
-    usage: /showscore
     permission: Randomtp.all
     permission-message: You don't have <permission>
 permissions:
