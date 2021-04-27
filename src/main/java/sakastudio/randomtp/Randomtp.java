@@ -42,6 +42,10 @@ public final class Randomtp extends JavaPlugin implements Listener {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
         if(cmd.getName().equalsIgnoreCase("exerandomTp")){
+            if (args.length != 1){sender.sendMessage("/exerandomTp <プレイヤー>");return false;}
+            List<Entity> entities = Bukkit.selectEntities(sender,args[0]);
+
+
             Player p = (Player)sender;
             Random r = new Random();
             double playerX = p.getLocation().getX();
@@ -49,14 +53,13 @@ public final class Randomtp extends JavaPlugin implements Listener {
 
             Collection<? extends Player> players = Bukkit.getOnlinePlayers();
 
-            for (Player player : players) {
+            for (Entity entity : entities) {
                 double x = r.nextInt(radius * 2) - radius + playerX;
                 double z = r.nextInt(radius * 2) - radius + playerZ;
 
-                Location location = new Location(p.getWorld(), x,255,z);
-                player.teleport(location);
+                entity.teleport(new Location(p.getWorld(), x,255,z));
             }
-            sender.sendMessage("ランダムTPを実行しました");
+            sender.sendMessage(String.format("%d体のエンティティのランダムTPを実行しました",entities.stream().count()));
 
             return true;
         }
